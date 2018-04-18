@@ -1,0 +1,12 @@
+table Icon
+  Caption:
+  AppID: chromium
+  Command: chromium-browser
+  Singleton: true
+  Icon: /usr/share/microninja-desktop/icons/chromium.png
+  IconHover: /usr/share/microninja-desktop/icons/chromium-hover.png
+  HoverXOffset: 0
+  Relative-To: grid
+  X: 1
+  Y: 0
+end

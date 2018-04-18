@@ -1,0 +1,115 @@
+#!/bin/bash
+
+# postinst
+#
+# Copyright (C) 2014,2015 Kano Computing Ltd.
+# License: http://www.gnu.org/licenses/gpl-2.0.txt GNU General Public License v2
+#
+
+# Copyright (C) 2016 Alfabook srl
+# License: http://www.gnu.org/licenses/gpl-2.0.txt GNU General Public License v2
+# rebadged with microninja
+# removed squeak 
+# added mkdir /etc/chromium
+
+openbox_rc=/etc/xdg/openbox/rc.xml
+lxde_openbox_rc=/etc/xdg/openbox/LXDE/rc.xml
+custom_openbox_rc=/usr/share/microninja-desktop/openbox/rc.xml
+
+mkdir /etc/chromium
+chromium_master_prefs=/etc/chromium/master_preferences
+custom_chromium_master_prefs=/usr/share/microninja-desktop/config/chromium/master_preferences
+
+chromium_bookmarks=/etc/chromium/initial_bookmarks.html
+custom_chromium_bookmarks=/usr/share/microninja-desktop/config/chromium/initial_bookmarks.html
+
+lxde_autostart=/etc/xdg/lxsession/LXDE/autostart
+custom_lxde_autostart=/usr/share/microninja-desktop/config/autostart/autostart
+
+SQUEAKDIR=/usr/share/squeak
+
+TMP_SUDOERS_FILE=/tmp/microninja-desktop_conf
+
+ldm_conf=/etc/lightdm/lightdm.conf
+ldm_login=/usr/share/microninja-desktop/scripts/ldm-session-setup-script
+ldm_logout=/usr/share/microninja-desktop/scripts/ldm-session-cleanup-script
+
+case "$1" in
+    configure)
+
+
+
+        # /etc/skel/.config
+        mkdir -p /etc/skel/.config
+        ln -s /usr/share/microninja-desktop/config/pcmanfm /etc/skel/.config/pcmanfm
+        ln -s /usr/share/microninja-desktop/config/libfm /etc/skel/.config/libfm
+
+        # we want users to keep their private local lxpanel customization
+        # so we copy the files along into a directory, instead of a symbolic link
+        mkdir -p /etc/skel/.config/lxpanel
+        cp -r /usr/share/microninja-desktop/config/lxpanel/* /etc/skel/.config/lxpanel
+
+        ln -s /usr/share/microninja-desktop/config/lxterminal /etc/skel/.config/lxterminal
+        ln -s /usr/share/microninja-desktop/config/lxsession /etc/skel/.config/lxsession
+
+        # /etc/skel/Legal
+        ln -s /usr/share/microninja-desktop/Legal /etc/skel/Legal
+
+        # /etc/skel/.bashrc
+        cp /usr/share/microninja-desktop/config/profile/.bashrc /etc/skel/
+
+        # Configure openbox
+        cp $openbox_rc $openbox_rc-old
+        cat $custom_openbox_rc > $openbox_rc
+
+        cp $lxde_openbox_rc $lxde_openbox_rc-old
+        cat $custom_openbox_rc > $lxde_openbox_rc
+
+        # Configure chromium
+        #cp $chromium_master_prefs $chromium_master_prefs-old
+        cp $custom_chromium_master_prefs $chromium_master_prefs
+
+        #cp $chromium_bookmarks $chromium_bookmarks-old
+        cp $custom_chromium_bookmarks $chromium_bookmarks
+
+        # Set kdesk as the desktop manager
+        cp $lxde_autostart $lxde_autostart-old
+        cp $custom_lxde_autostart $lxde_autostart
+
+        # allow user to switch to virtual console terminals
+        # Create custom sudoers file
+        echo "%sudo   ALL=(root) NOPASSWD: /bin/chvt" > $TMP_SUDOERS_FILE
+
+        # The owner and group for the sudoers file must both be 0
+        chown root:root $TMP_SUDOERS_FILE
+
+        # The file permissions must be set to 0440
+        chmod 0440 $TMP_SUDOERS_FILE
+
+        # Move the file to the sudoers directory
+        mv $TMP_SUDOERS_FILE /etc/sudoers.d/
+
+        # Add login and logoff hooks to track usage of the kit
+        # sed -i "s|#\?\(session-setup-script\=\).*|\1$ldm_login|" $ldm_conf
+        # sed -i "s|#\?\(session-cleanup-script\=\).*|\1$ldm_logout|" $ldm_conf
+
+        # Apply Kano PAM customization to enforce umask for login sessions
+        pam-auth-update --package microninja-umask --force
+
+        # Fix hourglass staying too long when starting more than 1 lxterminal
+        lxterm_desktop_file='/usr/share/applications/auto_terminal.desktop'
+
+        if [ -f "$lxterm_desktop_file" ]; then
+            # then apply the patch: tell lxde to forget about it (add/force StartupNotify=false)
+            sed -i '/^StartupNotify=/{h;s/=.*/=false/};${x;/^$/{s//StartupNotify=false/;H};x}' $lxterm_desktop_file
+
+            # and wrap lxterminal inside kdesk hourglass command line tool
+            sed -i "s/Exec=.*/Exec=\/bin\/bash -c \"kdesk-hourglass-app lxterminal ; lxterminal\"/g" $lxterm_desktop_file
+        fi
+
+        ;;
+esac
+
+#DEBHELPER#
+
+exit 0

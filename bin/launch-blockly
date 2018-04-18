@@ -1,0 +1,11 @@
+#!/usr/bin/microninja-splash /usr/share/microninja-desktop/splash/splash-blockly.png /usr/bin/env python
+
+import os
+import sys
+import time
+import subprocess
+
+subprocess.Popen(["/usr/bin/chromium-browser", "--start-maximized", "--app=file:///usr/share/blockly-games/index.html"])
+time.sleep(5)
+os.system("microninja-stop-splash")
+

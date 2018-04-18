@@ -1,0 +1,12 @@
+table Icon
+  Caption:
+  AppID: Microninja
+  Command: chromium-browser --start-maximized --app=https://www.youtube.com
+  Singleton: true
+  Icon: /usr/share/microninja-desktop/icons/youtube.png
+  IconHover: /usr/share/microninja-desktop/icons/youtube-hover.png
+  HoverXOffset: 0
+  Relative-To: grid
+  X: 2
+  Y: 0
+end

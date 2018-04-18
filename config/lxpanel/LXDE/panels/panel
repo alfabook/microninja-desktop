@@ -1,0 +1,127 @@
+Global {
+    edge=bottom
+    allign=left
+    margin=0
+    widthtype=percent
+    width=100
+    height=44
+    transparent=1
+    tintcolor=#FFFFFF
+    alpha=255
+    autohide=0
+    heightwhenhidden=2
+    setdocktype=1
+    setpartialstrut=1
+    usefontcolor=1
+    fontsize=13
+    fontcolor=#6E6E6E
+    usefontsize=1
+    background=0
+    backgroundfile=/usr/share/lxpanel/images/background.png
+    iconsize=44
+}
+
+Plugin {
+    type = menu
+    Config {
+        image=/usr/share/microninja-desktop/images/startmenu.png
+        system {
+        }
+        separator {
+        }
+        item {
+            image=/usr/share/microninja-desktop/icons/apps.png
+            name=App
+            action=/bin/bash -c "kdesk-hourglass-app microninja-apps && /usr/bin/microninja-apps"
+        }
+        item {
+            image=/usr/share/microninja-desktop/icons/microninja-homefolder.png
+            name=Documenti
+            action=/bin/bash -c "kdesk-hourglass-app pcmanfm && /usr/bin/pcmanfm"
+        }
+        separator {
+        }
+        item {
+        image=/usr/share/microninja-desktop/icons/spegni.png
+        name=Spegni
+        action=microninja-shutdown
+        }
+    }
+}
+
+Plugin {
+    type = space
+    Config {
+        Size=8
+    }
+}
+
+Plugin {
+    type = taskbar
+    expand=1
+    Config {
+        tooltips=1
+        IconsOnly=0
+        ShowAllDesks=0
+        UseMouseWheel=1
+        UseUrgencyHint=1
+        FlatButton=1
+        MaxTaskWidth=140
+        spacing=4
+        GroupedTasks=0
+    }
+}
+
+Plugin {
+    type = tray
+}
+
+Plugin {
+    type = microninja_internet
+}
+
+Plugin {
+    type = microninja_updater
+}
+
+Plugin {
+    type = microninja_settings
+}
+
+Plugin {
+    type = volumealsa
+}
+
+Plugin {
+    type = space
+    Config {
+        Size=12
+    }
+}
+
+Plugin {
+    type = dclock
+    Config {
+        ClockFmt=%H:%M
+        TooltipFmt=%A %x
+        BoldFont=1
+        IconOnly=0
+        CenterText=0
+    }
+}
+
+Plugin {
+    type = space
+    Config {
+        Size=12
+    }
+}
+
+Plugin {
+    type = monitors
+    Config {
+         DisplayCPU=1
+         DisplayRAM=0
+         CPUColor=#FF8700
+    }
+}

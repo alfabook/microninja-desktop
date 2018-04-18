@@ -1,0 +1,66 @@
+#!/bin/bash
+
+# kano-screenshot-hotkey
+#
+# Copyright (C) 2014,2015 Kano Computing Ltd.
+# License: http://www.gnu.org/licenses/gpl-2.0.txt GNU General Public License v2
+#
+# This script is executed when the Screenshot hotkey is pressed. It saves a timestamped
+# image file under $dirname directory, which is created if it does not exist.
+#
+# Copyright (C) 2016 Alfabook srl
+# License: http://www.gnu.org/licenses/gpl-2.0.txt GNU General Public License v2
+# rebadged with microninja
+# removed notification, made with microninja-dialog
+
+. gettext.sh
+export TEXTDOMAIN="microninja-desktop"
+export TEXTDOMAINDIR=/usr/share/locale/microninja/microninja-desktop
+
+lockfile="/var/run/lock/microninja-screenshot-hotkey.lock"
+
+function unlock {
+    rm -f $lockfile
+}
+
+if [ -f $lockfile ]; then
+    # kano-screenshot is in progress
+    exit 1
+else
+    touch $lockfile
+    trap unlock EXIT
+fi
+
+# Create the screenshots directory if needed
+dirname=`echo $HOME/Screenshots`
+if [ ! -d "$dirname" ] && [[ $dirname == /home/* ]]; then
+    mkdir -p "$dirname"
+fi
+
+# Play camera shutter sound and take a screenshot
+aplay /usr/share/microninja-media/sounds/microninja_camera_shutter.wav
+microninja-screenshot -f $dirname
+rc=$?
+
+if [ -p $notification_pipe ]; then
+
+    # Prepare a Desktop notification message
+    if [ $rc == 0 ]; then
+        title="`eval_gettext "Screenshot taken!"`"
+        byline="`eval_gettext "You'll find it in ~/Screenshots"`"
+    else
+        title="`eval_gettext "Error during screenshot capture"`"
+        byline="`eval_gettext "Cannot capture screenshot"`"
+    fi
+
+    image="/usr/share/microninja-screenshot/media/notification.png"
+    sound="/usr/share/microninja-media/sounds/microninja_open_app.wav"    
+    
+    cmd="microninja-dialog title=\"$title\" description=\"$byline\" background=$image buttons=ok:orange:1 no-taskbar"
+    eval $cmd
+    aplay $sound
+    #message="{\"title\": \"$title\", \"byline\": \"$byline\", \"image\": \"$image\", \"sound\": \"$sound\"}"
+    #echo $message >> $HOME/.microninja-notifications.fifo
+fi
+
+exit $rc

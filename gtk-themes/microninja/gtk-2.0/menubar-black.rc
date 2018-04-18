@@ -1,0 +1,62 @@
+#################### MENUBAR ###################
+style "user-font"
+{
+  font_name="Sans"
+}
+gtk-font-name = "Sans 9"
+
+style "menubar"		
+{
+  fg[NORMAL] = "#ffffff"
+  text[NORMAL] = "#ffffff"
+  fg[PRELIGHT] = "#000000"
+  fg[ACTIVE] = "#000000"
+  fg[INSENSITIVE] = "#808080"
+  #fg[INSENSITIVE] = "#e04613"
+  text[PRELIGHT] = "#000000"
+
+xthickness			= 2
+#ythickness with orange stripe  = 2
+ythickness			= 1
+	engine "pixmap"
+	{
+		image
+		{
+			function	= BOX
+			state = NORMAL
+			file		= "Menu-Menubar/menubar-black.png"
+			border	= { 2, 2, 2, 2 }
+			stretch	= TRUE
+    		}
+
+		image
+		{
+			function	= BOX
+			state = ACTIVE
+			file		= "Menu-Menubar/menubar-black.png"
+			border	= { 2, 2, 2, 2 }
+			stretch	= TRUE
+    		}
+
+		image
+		{
+			function	= BOX
+			state = INSENSITIVE
+			file		= "Menu-Menubar/menubar-black.png"
+			border	= { 2, 2, 2, 2 }
+			stretch	= TRUE
+    		}
+
+  image
+    {
+      function			= BOX
+      recolorable		= TRUE
+			state = PRELIGHT
+     file				= "Menu-Menubar/menubar-item.png"
+
+      border			= { 10, 10, 10, 10 }
+      stretch			= TRUE
+    }
+
+ 	}
+}

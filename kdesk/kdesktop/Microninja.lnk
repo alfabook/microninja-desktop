@@ -1,0 +1,12 @@
+table Icon
+  Caption:
+  AppID: Microninja
+  Command: chromium-browser --start-maximized --app=http://www.microninja.me/risorse
+  Singleton: true
+  Icon: /usr/share/microninja-desktop/icons/risorse-microninja.png
+  IconHover: /usr/share/microninja-desktop/icons/risorse-microninja-hover.png
+  HoverXOffset: 0
+  Relative-To: grid
+  X: 3
+  Y: 0
+end

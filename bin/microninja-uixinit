@@ -1,0 +1,237 @@
+#!/bin/bash
+
+# kano-uixinit
+#
+# Copyright (C) 2014,2015 Kano Computing Ltd.
+# License: http://www.gnu.org/licenses/gpl-2.0.txt GNU General Public License v2
+#
+#  This script is a wrapper on top of LXDE autoinit.
+#
+#  It performs all configuration, launching, and other processing related to:
+#  First login:
+#    * kano-tutorial, kano-init-flow, kano-login, the OS intro video
+#    * Triggers first login processing of kano-init and kano-updater
+#  Every login:
+#    * Configures: screensaver, audio  (alsa-utils), keyboard, mouse, kano-vnc
+#    * Starts lxpanel, kano-mount-trigger, kdesk, kano-feedback-widget
+#    * Triggers login processing for kano-tracker-ctl, kano-sync, kano-updater
+
+# Copyright (C) 2016 Alfabook srl
+# License: http://www.gnu.org/licenses/gpl-2.0.txt GNU General Public License v2
+# rebadged with microninja
+# removed some parts
+
+. /usr/share/microninja-toolset/logging.sh
+
+first_boot_file="$HOME/.microninja-settings/first_boot"
+after_update_file="$HOME/.microninja-settings/after_update"
+mkdir -p "$HOME/.microninja-settings"
+
+#prevent gtk apps from warning about lack of accessibility bridge
+export NO_AT_BRIDGE=1
+
+function is_installed
+{
+    if [ -n "`which $1`" ]; then
+        return 0
+    else
+        return 1
+    fi
+}
+
+function set_keyboard
+{
+    # Load Kano Keyboard configuration file for Hotkeys, or a generic one for regular keyboards
+    keyboard_conf_dir="/usr/share/microninja-desktop/config/keyboard"
+    if [ "$1" = "True" ]; then
+        keyboard_conf="$keyboard_conf_dir/kanokeyboardrc"
+    else
+        keyboard_conf="$keyboard_conf_dir/generickeyboardrc"
+    fi
+    logger_info "Launching xbindkeys with configuration: $keyboard_conf"
+    /usr/bin/xbindkeys -f $keyboard_conf
+
+    # Set user keyboard layout
+    logger_info "Setting the keyboard layout for the user"
+    sudo /usr/bin/microninja-settings-cli set keyboard --load
+}
+
+############ STARTS HERE ############
+
+# Track some information about the hardware used
+#kano-tracker-ctl generate hw-info
+
+# Start the tracking daemon
+#kano-tracker-ctl refresh --watch &
+
+# Disable XServer screen saver time and screen blanking (The display would become black)
+if is_installed xset; then
+    logger_info "Disabling the screensaver"
+    xset s off
+    xset -dpms
+    xset s noblank
+fi
+
+# detect kano-keyboard
+kano_keyboard=`python -c "from microninja.utils import detect_kano_keyboard; print detect_kano_keyboard()"`
+
+# Set the initial default volume
+if [ -e /etc/init.d/alsa-utils ]; then
+    amixer -c 0 -- sset PCM 0 &> /dev/null
+    ret_val_pcm="$?"
+
+    amixer -c 0 -- sset Master 6 &> /dev/null
+    ret_val_master="$?"
+
+    if [ "$ret_val_pcm" -ne 0 ] || [ "$ret_val_master" -ne 0 ]; then
+        logger_warn "Failed to set initial volume level, ret code: $ret_val"
+    fi
+else
+    logger_warn "alsa-utils not found, volume not set"
+fi
+
+#kano-init-flow
+#kano_init_flow_rv=$?
+#if [ $kano_init_flow_rv -eq 0 ]; then
+    # regenerating ssh keys
+    #if [ `getent group kanousers | wc -l` -eq 1 ]; then
+    #    sudo regenerate-ssh-keys &
+    #fi
+
+    #logger_info "Playing os_intro.mp4"
+    #kano-video-cli /usr/share/kano-media/videos/os_intro.mp4
+
+    # Finalise account setup
+    #sudo kano-init finalise
+    #sudo kano-updater first-boot
+
+    # TODO: disabled for production 7
+    #kano-profile-gui --screen=quests
+#else
+    # The following is executed in subsequent boots
+
+    # start hourglass to wait for the last X11 app to get ready
+    kdesk-hourglass-app "lxpanel"
+
+    # load background
+    /usr/bin/kdesk -w &
+#fi
+
+# loads and sets the keyboard layout
+set_keyboard $kano_keyboard
+
+# startmouse
+logger_info "Launching startmouse"
+/usr/bin/startmouse &
+
+# lxpanel
+logger_info "Launching LXPanel"
+
+/usr/bin/lxpanel --profile LXDE &
+
+# Notification widget
+#/usr/bin/kano-notifications-daemon &
+
+# LXPanel resets the volume level to 100, we need it to be restored to
+# whatever level it was before shutdown or reboot
+if [ -e /etc/init.d/alsa-utils ]; then
+    # Redirect both stderr and stdout to null, we can do our own logging
+    /etc/init.d/alsa-utils start &> /dev/null
+    ret_val="$?"
+    if [ "$ret_val" -ne 0 ]; then
+        logger_warn "Failed to restore volume level, ret code: $ret_val"
+    else
+        logger_info "Audio volume level was successfully restored"
+    fi
+else
+    logger_warn "alsa-utils not found, can't attempt to restore volume level"
+fi
+# start mount trigger
+logger_info "Launching microninja-mount-trigger"
+/usr/bin/microninja-mount-trigger "/usr/bin/microninja-launcher /usr/bin/pcmanfm pcmanfm" &
+
+# starting kdesk
+logger_info "Launching kdesk"
+#/usr/bin/kdesk &
+# kill previous instances
+sudo killall kdesk_guard
+/usr/bin/kdesk_guard &
+
+# launching desktop widgets
+#/usr/bin/kano-feedback-widget &
+#/usr/bin/kano-world-widget &
+
+
+# Report a startup event to Kano Tracker
+# kano-tracker-ctl +1 startup
+
+# TODO: This should be in a drop in directory,
+# installed from the updater instead
+#sudo kano-updater ui boot-window
+
+#if [ is_internet ]; then
+    # Try uploading the tracking data to our servers
+    # Should be quiet on failure
+    #kano-sync --upload-tracking-data --silent
+
+    # Sync objects from the content API in the background
+    # TODO: This should be removed once we have the daemon done
+    #sudo kano-content sync &
+#fi
+
+
+# Remove Homedir "Desktop" folder created by:
+# /usr/share/xsessions/lightdm-xsession.desktop
+rm -rf  ~/Desktop
+
+# starting microninja-vnc
+startvnc=/usr/share/microninja-vnc/startvnc
+if [ -e $startvnc ]; then
+    logger_info "Launching startvnc"
+    $startvnc
+fi
+
+#starting cloud sync daemon
+#sudo killall microninja-cloud-sync
+#microninja-cloud-sync &
+
+#adding widget level and stars
+#sudo killall ws_xp_daemon
+#sudo killall microninja-xp-badges
+#microninja-xp-badges &
+
+#help
+#sudo killall microninja-help
+#microninja-help &
+
+#time zone
+sudo microninja-tzupdate &
+
+sleep 3
+aplay /usr/share/microninja-media/sounds/microninja_boot_up.wav
+
+function checkParental
+{    
+    sudo microninja-application-config -w --get=parental,setted
+}
+
+if [ `checkParental` == "VARIABLE_NOT_FOUND" ]; then 
+    #sudo microninja-default-parental
+    #sudo microninja-settings --id=14
+    sudo microninja-settings --id=10
+    sudo microninja-settings --id=13   
+    sudo microninja-application-config -w --set=parental,setted,1
+fi
+
+
+#crash lxpanel, no more needed
+#while true
+#do
+#  pidPanel=`pgrep lxpanel`
+#  if [ $pidPanel > /dev/null ] ;then 
+#   sleep 1
+#  else
+#    /usr/bin/lxpanel --profile LXDE &
+#  fi
+
+#done

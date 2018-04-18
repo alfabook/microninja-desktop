@@ -1,0 +1,13 @@
+table Icon
+  Caption:
+  AppID: PlusIcon
+  Command: /usr/bin/microninja-launcher "/usr/bin/microninja-apps icon-tutorial"
+  Singleton: true
+  Icon: /usr/share/microninja-desktop/icons/plus-icon.png
+  IconHover: /usr/share/microninja-desktop/icons/plus-icon-hover.png
+  HoverXOffset: 0
+  Relative-To: grid
+  X: 5
+  Y: 0
+  Transparency: 40
+end

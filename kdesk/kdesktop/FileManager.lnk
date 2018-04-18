@@ -1,0 +1,12 @@
+table Icon
+  Caption:
+  AppID: FileManager
+  Command: /bin/bash -c "kdesk-hourglass-app pcmanfm && /usr/bin/pcmanfm"
+  Singleton: true
+  Icon: /usr/share/microninja-desktop/icons/microninja-homefolder.png
+  IconHover: /usr/share/microninja-desktop/icons/microninja-homefolder-hover.png
+  HoverXOffset: 0
+  Relative-To: grid
+  X: 4
+  Y: 0
+end

@@ -1,0 +1,12 @@
+table Icon
+  Caption:
+  AppID: TerminaleMagico
+  Command: linux-story-gui
+  Singleton: true
+  Icon: /usr/share/microninja-desktop/icons/terminale-magico.png
+  IconHover: /usr/share/microninja-desktop/icons/terminale-magico-hover.png
+  HoverXOffset: 0
+  Relative-To: grid
+  X: 4
+  Y: 1
+end

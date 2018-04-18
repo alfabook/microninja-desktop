@@ -1,0 +1,11 @@
+#!/usr/bin/microninja-splash /usr/share/microninja-desktop/splash/splash-youtube.png /usr/bin/env python
+
+import os
+import sys
+import time
+import subprocess
+
+subprocess.Popen(["chromium-browser", "http://www.youtube.it"])
+time.sleep(5)
+os.system("microninja-stop-splash")
+

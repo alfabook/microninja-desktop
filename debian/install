@@ -1,0 +1,45 @@
+wallpapers usr/share/microninja-desktop
+icons usr/share/microninja-desktop
+splash usr/share/microninja-desktop
+images usr/share/microninja-desktop
+kdesk usr/share/microninja-desktop
+Legal usr/share/microninja-desktop
+
+config/alsa/.asound* etc/skel
+config/autostart usr/share/microninja-desktop/config
+config/chromium usr/share/microninja-desktop/config
+config/keyboard/kanokeyboardrc usr/share/microninja-desktop/config/keyboard
+config/keyboard/generickeyboardrc usr/share/microninja-desktop/config/keyboard
+config/libfm usr/share/microninja-desktop/config
+config/lxpanel usr/share/microninja-desktop/config
+config/lxterminal usr/share/microninja-desktop/config
+config/lxsession usr/share/microninja-desktop/config
+config/openbox usr/share/microninja-desktop
+config/pcmanfm usr/share/microninja-desktop/config
+config/profile usr/share/microninja-desktop/config
+config/rxvt/x11-rxvt etc/X11/Xresources
+config/gtk-2.0 etc/skel/.config/
+config/dconf etc/skel/.config/
+kdesk/.kdeskrc etc/skel
+
+videos usr/share/microninja-media
+gtk-themes/microninja usr/share/themes
+icon-themes/microninja usr/share/icons
+
+bin/microninja-uixinit usr/bin
+bin/kdesk_guard usr/bin
+bin/microninja-cloud-sync usr/bin
+bin/microninja-screenshot-hotkey usr/bin
+bin/microninja-default-parental usr/bin
+
+bin/launch-scratch usr/bin
+bin/launch-youtube usr/bin
+bin/launch-blockly usr/bin
+bin/launch-arduino usr/bin
+
+pam-configs/microninja-umask /usr/share/pam-configs
+
+microninja-mount-trigger/microninja-mount-trigger /usr/bin/
+microninja-mount-trigger/95-microninja-mount-trigger.rules /lib/udev/rules.d/
+
+po/it/microninja-desktop.mo /usr/share/locale/microninja/microninja-desktop/it/LC_MESSAGES/

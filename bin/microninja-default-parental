@@ -1,0 +1,22 @@
+#!/usr/bin/python
+
+# Copyright (C) 2016 Alfabook srl
+# License: http://www.gnu.org/licenses/gpl-2.0.txt GNU General Public License v2
+
+from microninja_settings.config_file import set_setting
+from microninja_settings.system.advanced import set_parental_level
+
+def main():
+    # parse command line options
+    set_parental_level(1)
+    set_setting('Parental-level', 1)
+			
+if __name__ == "__main__":
+	main()
+
+
+
+
+			
+            
+    

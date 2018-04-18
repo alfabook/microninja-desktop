@@ -1,0 +1,64 @@
+# For the benefit of emacs users: -*- shell-script -*-
+###########################
+# xbindkeys configuration #
+###########################
+#
+# xbindkeys configuration for keyboard other than the Kano keyboard
+#
+# This configuration file is used by xbindkeys
+# which is released under the GPL license
+#
+#  http://www.nongnu.org/xbindkeys/xbindkeys.html#licence
+#
+# Version: 1.8.5
+#
+# If you edit this file, do not forget to uncomment any lines
+# that you change.
+# The pound(#) symbol may be used anywhere for comments.
+#
+# To specify a key, you can use 'xbindkeys --key' or
+# 'xbindkeys --multikey' and put one of the two lines in this file.
+#
+# The format of a command line is:
+#    "command to start"
+#       associated key
+#
+#
+# A list of keys is in /usr/include/X11/keysym.h and in
+# /usr/include/X11/keysymdef.h
+# The XK_ is not needed.
+#
+# List of modifier:
+#   Release, Control, Shift, Mod1 (Alt), Mod2 (NumLock),
+#   Mod3 (CapsLock), Mod4, Mod5 (Scroll).
+#
+
+# The release modifier is not a standard X modifier, but you can
+# use it if you want to catch release events instead of press events
+
+# By defaults, xbindkeys does not pay attention with the modifiers
+# NumLock, CapsLock and ScrollLock.
+# Uncomment the lines above if you want to pay attention to them.
+
+#keystate_numlock = enable
+#keystate_capslock = enable
+#keystate_scrolllock= enable
+
+# generic defintion for the "Print Screen" keyboard key press
+"/usr/bin/microninja-screenshot-hotkey"
+  Print
+
+# Master Volume mute
+"amixer set PCM toggle"
+ m:0x0 + c:121
+ XF86AudioMute
+
+# Master Volume Down
+"microninja-volume down"
+ m:0x0 + c:122
+ XF86AudioLowerVolume 
+
+# Master Volume Up
+"microninja-volume up"
+ m:0x0 + c:123
+ XF86AudioRaiseVolume

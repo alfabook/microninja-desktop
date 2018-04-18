@@ -1,0 +1,15 @@
+Source: microninja-desktop
+Maintainer: Scuolabook Go Team <info@scuolabook.it>
+Section: x11
+Priority: optional
+Standards-Version: 3.9.4
+Build-Depends: debhelper (>=9.0.0)
+
+Package: microninja-desktop
+Architecture: all
+Depends: ${misc:Depends}, openbox,
+         kdesk, midori, lxmenu-data, libkdesk-dev, microninja-greeter, microninja-settings, telnet,
+         microninja-toolset
+Description: The desktop experience of Microninja
+ This package contains a variety of configuration files and resources that
+ make up the whole Microninja experience on top of LXDE.

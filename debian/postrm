@@ -1,0 +1,90 @@
+#!/bin/bash
+
+# postrm
+#
+# Copyright (C) 2015 Kano Computing Ltd.
+# License:   http://www.gnu.org/licenses/gpl-2.0.txt GNU General Public License v2
+#
+
+# Copyright (C) 2016 Alfabook srl
+# License: http://www.gnu.org/licenses/gpl-2.0.txt GNU General Public License v2
+# rebadged with microninja
+
+openbox_rc=/etc/xdg/openbox/rc.xml
+lxde_openbox_rc=/etc/xdg/openbox/LXDE/rc.xml
+
+chromium_master_prefs=/etc/chromium/master_preferences
+chromium_bookmarks=/etc/chromium/initial_bookmarks.html
+
+lxde_autostart=/etc/xdg/lxsession/LXDE/autostart
+
+SUDOERS_FILE=/etc/sudoers.d/microninja-desktop_conf
+
+ldm_conf=/etc/lightdm/lightdm.conf
+ldm_login=/usr/share/microninja-desktop/scripts/ldm-session-setup-script
+ldm_logout=/usr/share/microninja-desktop/scripts/ldm-session-cleanup-script
+
+case "$1" in
+    remove|upgrade)
+
+        # Remove squeak, but only from skel
+        rm -rf /etc/skel/squeak
+
+        # Revert old openbox config
+        if [ -e "$openbox_rc-old" ]; then
+            mv $openbox_rc-old $openbox_rc
+        fi
+
+        if [ -e "$lxde_openbox_rc-old" ]; then
+            mv $lxde_openbox_rc-old $lxde_openbox_rc
+        fi
+
+        # Removing links
+        rm -f /etc/skel/.config/pcmanfm
+        rm -f /etc/skel/.config/libfm
+
+        # lxpanel is now a directory, not a symbolic link (see postinst)
+        rm -rf /etc/skel/.config/lxpanel
+
+        rm -f /etc/skel/.config/lxterminal
+        rm -f /etc/skel/.config/lxsession
+        rm -rf /etc/skel/Legal
+
+        # Revert chromium config
+        if [ -e "$chromium_bookmarks-old" ]; then
+            mv $chromium_bookmarks-old $chromium_bookmarks
+        fi
+        if [ -e "$chromium_master_prefs-old" ]; then
+            mv $chromium_master_prefs-old $chromium_master_prefs
+        fi
+
+        # Unset kdesk as the desktop manager
+        if [ -e "$lxde_autostart-old" ]; then
+            mv $lxde_autostart-old $lxde_autostart
+        fi
+
+        # remove sudoers file to switch VTs
+        rm -f $SUDOERS_FILE
+
+        # Remove login and logoff hooks
+        sed -i "s|#\?\(session-setup-script\=\).*|#\1|" $ldm_conf
+        sed -i "s|#\?\(session-cleanup-script\=\).*|#\1|" $ldm_conf
+
+        # Remove the hourglass fix when starting multiple lxterminals through desktop menu
+        lxterm_desktop_file='/usr/share/applications/auto_terminal.desktop'
+
+        if [ -f "$lxterm_desktop_file" ]; then
+            # Remove the StartupNotify flag
+            sed -i '/^StartupNotify=.*/g' $lxterm_desktop_file
+
+            # Remove Kano hourglass wrapper tool
+            sed -i "s/Exec=.*/Exec=lxterminal/g" $lxterm_desktop_file
+        fi
+
+        ;;
+esac
+
+
+#DEBHELPER#
+
+exit 0

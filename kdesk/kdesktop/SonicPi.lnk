@@ -1,0 +1,12 @@
+table Icon
+  Caption:
+  AppID: GO
+  Command: sonic-pi
+  Singleton: true
+  Icon: /usr/share/microninja-desktop/icons/sonic-pi.png
+  IconHover: /usr/share/microninja-desktop/icons/sonic-pi-hover.png
+  HoverXOffset: 0
+  Relative-To: grid
+  X: 5
+  Y: 1
+end

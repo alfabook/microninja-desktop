@@ -1,0 +1,12 @@
+table Icon
+  Caption:
+  AppID: BLOCKLY
+  Command: launch-blockly
+  Singleton: true
+  Icon: /usr/share/microninja-desktop/icons/blockly.png
+  IconHover: /usr/share/microninja-desktop/icons/blockly-hover.png
+  HoverXOffset: 0
+  Relative-To: grid
+  X: 2 
+  Y: 1
+end

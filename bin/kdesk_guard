@@ -1,0 +1,13 @@
+#!/bin/bash
+
+COUNTER=0
+while true;
+do
+    if [ "$COUNTER" -eq "0" ]; then
+        /usr/bin/kdesk -w
+    else
+        /usr/bin/kdesk -m
+    fi
+
+    let COUNTER+=1 
+done

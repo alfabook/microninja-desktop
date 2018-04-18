@@ -1,0 +1,14 @@
+#!/usr/bin/python
+
+
+#////////!/usr/bin/microninja-splash /usr/share/microninja-desktop/splash/splash-arduino.png /usr/bin/env python
+
+import os
+import sys
+import time
+import subprocess
+
+subprocess.Popen(["arduino"])
+#time.sleep(5)
+#os.system("microninja-stop-splash")
+
